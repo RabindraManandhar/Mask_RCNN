@@ -6,6 +6,7 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 
 from pathlib import Path
+import shutil
 
 
 class MaskRCNNTrainer:
@@ -41,7 +42,6 @@ class MaskRCNNTrainer:
         self.model.train()
 
         for epoch in range(num_epochs):
-            print(f"Epoch: {num_epochs}")
             total_loss = 0
             for images, targets, _ in data_loader:
                 images = list(image.to(self.device) for image in images)
@@ -55,16 +55,8 @@ class MaskRCNNTrainer:
                     loss_dict = self.model(images, targets)
                     print("Loss Dict:", loss_dict)
 
-                    # Ensure all losses are contiguous
-                    for loss_name, loss_value in loss_dict.items():
-                        if not loss_value.is_contiguous():
-                            print(
-                                f"{loss_name} is not contiguous. Making it contiguous."
-                            )
-                            loss_dict[loss_name] = loss_value.contiguous()
-
                     # Sum the losses
-                    losses = sum(loss.reshape(1) for loss in loss_dict.values())
+                    losses = sum(loss for loss in loss_dict.values())
                     print(f"Total Loss for Batch: {losses.item()}")
 
                     # Backward pass
@@ -79,10 +71,11 @@ class MaskRCNNTrainer:
                     print("Loss Dict:", loss_dict)
                     exit()
 
+            # Calculate average loss
             avg_loss = total_loss / len(data_loader)
             print(f"Epoch {epoch + 1} / {num_epochs}, Loss: {avg_loss:.4f}")
 
-            # Run validation
+            # Run validation if required
             if val_loader and (epoch + 1) % validate_every == 0:
                 print("Running validation...")
                 self.validate(val_loader)
@@ -107,29 +100,39 @@ class MaskRCNNTrainer:
 
                 # Temporarily switch to training mode for loss computation
                 self.model.train()
-                loss_dict = self.model(images, targets)
-                self.model.eval()
-
-                # Sum losses from loss_dict
-                batch_loss = sum(loss.item() for loss in loss_dict.values())
-                total_loss += batch_loss
+                try:
+                    loss_dict = self.model(images, targets)  # Compute loss
+                    batch_loss = sum(loss for loss in loss_dict.values())
+                    total_loss += batch_loss.item()
+                except Exception as e:
+                    print(f"Error during validation: {e}")
+                finally:
+                    self.model.eval()  # Restore evaluation mode
 
         avg_loss = total_loss / len(val_loader)
         print(f"Validation Loss: {avg_loss:.4f}")
 
-    def save_model(self, model_name, model_dir="models"):
+    def save_model(self, model_name, model_dir=None):
         # Create model directory
-        model_path = Path(model_dir)
-        model_path.mkdir(exist_ok=True, parents=True)
+        model_dir = Path(model_dir)
+        
+        if model_dir.exists() and model_dir.is_dir():
+            for item in model_dir():
+                if item.is_file() or item.is_symlink():
+                    item.unlink()
+                elif item.is_dir():
+                    shutil.rmtree(item)
+        else:
+            model_dir.mkdir(exist_ok=True, parents=True)
 
         # Define the full save path
-        model_save_path = model_path / model_name
+        model_save_path = model_dir / model_name
 
         # Save the model's state dictionary
         torch.save(self.model.state_dict(), model_save_path)
         print(f"Model saved to: {model_save_path}")
 
-    def load_model(self, model_name, model_dir="models"):
+    def load_model(self, model_name, model_dir=None):
         # Define the full path to the model file
         model_path = Path(model_dir) / model_name
 

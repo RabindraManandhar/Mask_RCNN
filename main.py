@@ -22,7 +22,7 @@ def main():
     val_annotations = val_dir / "_annotations.coco.json"
     test_annotations = test_dir / "_annotations.coco.json"
     num_classes = 4  # fruit, flower, leaves
-    num_epochs = 1
+    num_epochs = 50
 
     # device
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -72,10 +72,11 @@ def main():
     )
 
     # Save the model
-    trainer.save_model(model_name="mask_rcnn_model.pth")
+    print("Saving the model ...")
+    trainer.save_model(model_name="mask_rcnn_model.pth", model_dir="models")
 
     # Load the saved model
-    trainer.load_model(model_name="mask_rcnn_model.pth")
+    trainer.load_model(model_name="mask_rcnn_model.pth", model_dir="models")
 
     # Test Dataset and DataLoader
     try:
@@ -87,7 +88,6 @@ def main():
         exit()
 
     # Run inference
-    print("Running inference on test images...")
     class_names = ["Background", "Fruit", "Leaf", "Flower"]
     inference_runner = InferenceRunner(trainer.model, class_names, device)
     inference_runner.run_inference(test_dataset, output_dir="visualizations")

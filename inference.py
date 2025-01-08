@@ -1,4 +1,5 @@
 from pathlib import Path
+import shutil
 import torch
 from utils import visualize_and_save_predictions
 
@@ -11,7 +12,15 @@ class InferenceRunner:
 
     def run_inference(self, dataset, output_dir):
         output_dir = Path(output_dir)
-        output_dir.mkdir(parents=True, exist_ok=True)
+
+        if output_dir.exists() and output_dir.is_dir():
+            for item in output_dir():
+                if item.is_file() or item.is_symlink():
+                    item.unlink()
+                elif item.is_dir():
+                    shutil.rmtree(item)
+        else:
+            output_dir.mkdir(parents=True, exist_ok=True)
 
         print(f"Running inference on {len(dataset)} images...")
 
