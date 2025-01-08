@@ -37,6 +37,7 @@ logs/
 
 # Output visualizations
 visualizations/
+inference_results/
 
 # IDE settings
 .vscode/
