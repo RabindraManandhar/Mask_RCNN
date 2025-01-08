@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environment
+venv/
+env/
+ENV/
+*.venv
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+*.whl
+
+# PyTorch model files
+*.pth
+
+# Dataset and annotations
+dataset/
+!dataset/*.coco.json  # Include COCO annotations
+dataset/train/
+dataset/valid/
+dataset/test/
+
+# Logs and debug files
+*.log
+*.txt
+logs/
+*.out
+
+# Output visualizations
+visualizations/
+
+# IDE settings
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+test-results/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
