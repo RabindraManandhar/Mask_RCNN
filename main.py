@@ -3,8 +3,9 @@ import torch
 from torch.utils.data import DataLoader
 from datasets import COCODataset
 from trainer import MaskRCNNTrainer
+from inference import InferenceRunner
 from grabcut import GrabCutProcessor
-from utils import get_transforms, visualize_and_save_predictions
+from utils import get_transforms
 
 
 def main():
@@ -21,12 +22,12 @@ def main():
     val_annotations = val_dir / "_annotations.coco.json"
     test_annotations = test_dir / "_annotations.coco.json"
     num_classes = 4  # fruit, flower, leaves
-    num_epochs = 2
+    num_epochs = 1
 
     # device
-    device = "cpu"
+    device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    # Dataset and DataLoader
+    # Training Dataset and DataLoader
     try:
         train_dataset = COCODataset(
             train_dir, train_annotations, transforms=get_transforms()
@@ -39,6 +40,19 @@ def main():
         train_dataset, batch_size=2, shuffle=True, collate_fn=lambda x: tuple(zip(*x))
     )
 
+    # Validation Dataset and DataLoader
+    try:
+        valid_dataset = COCODataset(
+            val_dir, val_annotations, transforms=get_transforms()
+        )
+    except Exception as e:
+        print(f"Validation dataset loading error: {e}")
+        exit()
+
+    val_loader = DataLoader(
+        valid_dataset, batch_size=2, shuffle=False, collate_fn=lambda x: tuple(zip(*x))
+    )
+
     # Model Trainer
     trainer = MaskRCNNTrainer(num_classes=num_classes, device=device)
     optimizer = torch.optim.SGD(
@@ -46,9 +60,16 @@ def main():
     )
     trainer.compile(optimizer)
 
+    # Mode
+
     # Train the model
     print("Training the model...")
-    trainer.train(data_loader=train_loader, num_epochs=num_epochs)
+    trainer.train(
+        data_loader=train_loader,
+        val_loader=val_loader,
+        num_epochs=num_epochs,
+        validate_every=1,
+    )
 
     # Save the model
     trainer.save_model(model_name="mask_rcnn_model.pth")
@@ -56,41 +77,20 @@ def main():
     # Load the saved model
     trainer.load_model(model_name="mask_rcnn_model.pth")
 
-    # Test predictions
-    print("Testing the model...")
-    test_dataset = COCODataset(test_dir, test_annotations, transforms=get_transforms())
-    test_image, _, _ = test_dataset[0]
-    test_image_tensor = test_image.unsqueeze(0).to(device)
-
-    # Define class names
-    class_names = ["Background", "Fruit", "Leaf", "Flower"]
-
-    # Run inference on all test images
-    for idx in range(len(test_dataset)):
-        test_image, _, _ = test_dataset[idx]
-        test_image_tensor = test_image.unsqueeze(0).to(device)
-
-        # Run inference
-        with torch.no_grad():
-            predictions = trainer.model(test_image_tensor)
-
-        # Extract predictions
-        predicted_masks = (predictions[0]["masks"] > 0.5).squeeze(1).cpu().numpy()
-        predicted_labels = predictions[0]["labels"].cpu().tolist()
-
-        # Define output path for saving visualization
-        output_path = f"visualizations/test_image_{idx + 1}.png"
-
-        # Visualize and save predictions
-        visualize_and_save_predictions(
-            test_image.permute(
-                1, 2, 0
-            ).numpy(),  # Convert tensor to numpy array (H, W, 3)
-            predicted_masks,  # Predicted masks (N, H, W)
-            predicted_labels,  # Predicted class IDs
-            class_names,  # List of class names
-            output_path,  # Path to save visualization
+    # Test Dataset and DataLoader
+    try:
+        test_dataset = COCODataset(
+            test_dir, test_annotations, transforms=get_transforms()
         )
+    except Exception as e:
+        print(f"Testing dataset loading error: {e}")
+        exit()
+
+    # Run inference
+    print("Running inference on test images...")
+    class_names = ["Background", "Fruit", "Leaf", "Flower"]
+    inference_runner = InferenceRunner(trainer.model, class_names, device)
+    inference_runner.run_inference(test_dataset, output_dir="visualizations")
 
 
 if __name__ == "__main__":

@@ -36,11 +36,12 @@ class MaskRCNNTrainer:
         # Attach optimizer to the model
         self.optimizer = optimizer
 
-    def train(self, data_loader, num_epochs):
+    def train(self, data_loader, val_loader=None, num_epochs=None, validate_every=1):
         self.model.to(self.device)
         self.model.train()
 
         for epoch in range(num_epochs):
+            print(f"Epoch: {num_epochs}")
             total_loss = 0
             for images, targets, _ in data_loader:
                 images = list(image.to(self.device) for image in images)
@@ -78,7 +79,43 @@ class MaskRCNNTrainer:
                     print("Loss Dict:", loss_dict)
                     exit()
 
-            print(f"Epoch {epoch + 1} / {num_epochs}, Loss: {total_loss:.4f}")
+            avg_loss = total_loss / len(data_loader)
+            print(f"Epoch {epoch + 1} / {num_epochs}, Loss: {avg_loss:.4f}")
+
+            # Run validation
+            if val_loader and (epoch + 1) % validate_every == 0:
+                print("Running validation...")
+                self.validate(val_loader)
+
+    def validate(self, val_loader):
+        """
+        Validates the model on a validation dataset and computes total loss.
+
+        Args:
+            val_loader (DataLoader): DataLoader for the validation dataset.
+        """
+        self.model.eval()  # Set the model to evaluation mode
+        total_loss = 0
+
+        with torch.no_grad():
+            for images, targets, _ in val_loader:
+                images = [image.to(self.device) for image in images]
+                targets = [
+                    {k: v.to(self.device) for k, v in target.items()}
+                    for target in targets
+                ]
+
+                # Temporarily switch to training mode for loss computation
+                self.model.train()
+                loss_dict = self.model(images, targets)
+                self.model.eval()
+
+                # Sum losses from loss_dict
+                batch_loss = sum(loss.item() for loss in loss_dict.values())
+                total_loss += batch_loss
+
+        avg_loss = total_loss / len(val_loader)
+        print(f"Validation Loss: {avg_loss:.4f}")
 
     def save_model(self, model_name, model_dir="models"):
         # Create model directory
