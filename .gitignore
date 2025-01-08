@@ -32,6 +32,9 @@ dataset/test/
 logs/
 *.out
 
+# Exception: Do not ignore this specific .txt file
+!requirements.txt
+
 # Output visualizations
 visualizations/
 
