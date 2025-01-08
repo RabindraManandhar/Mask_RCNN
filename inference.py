@@ -14,7 +14,7 @@ class InferenceRunner:
         output_dir = Path(output_dir)
 
         if output_dir.exists() and output_dir.is_dir():
-            for item in output_dir():
+            for item in output_dir.iterdir():
                 if item.is_file() or item.is_symlink():
                     item.unlink()
                 elif item.is_dir():

@@ -22,7 +22,7 @@ def main():
     val_annotations = val_dir / "_annotations.coco.json"
     test_annotations = test_dir / "_annotations.coco.json"
     num_classes = 4  # fruit, flower, leaves
-    num_epochs = 50
+    num_epochs = 2
 
     # device
     device = "cuda" if torch.cuda.is_available() else "cpu"

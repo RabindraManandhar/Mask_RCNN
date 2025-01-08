@@ -39,10 +39,13 @@ class MaskRCNNTrainer:
 
     def train(self, data_loader, val_loader=None, num_epochs=None, validate_every=1):
         self.model.to(self.device)
-        self.model.train()
 
         for epoch in range(num_epochs):
+            self.model.train()
             total_loss = 0
+
+            print(f"Epoch {epoch + 1}/{num_epochs} - Training Started")
+
             for images, targets, _ in data_loader:
                 images = list(image.to(self.device) for image in images)
                 targets = [
@@ -67,7 +70,7 @@ class MaskRCNNTrainer:
                     total_loss += losses.item()
 
                 except RuntimeError as e:
-                    print(f"Error during training: {e}")
+                    print(f"Error during training at Epoch {epoch + 1}: {e}")
                     print("Loss Dict:", loss_dict)
                     exit()
 
@@ -77,7 +80,7 @@ class MaskRCNNTrainer:
 
             # Run validation if required
             if val_loader and (epoch + 1) % validate_every == 0:
-                print("Running validation...")
+                print(f"Epoch {epoch + 1}/{num_epochs} -Running validation")
                 self.validate(val_loader)
 
     def validate(self, val_loader):
@@ -115,9 +118,9 @@ class MaskRCNNTrainer:
     def save_model(self, model_name, model_dir=None):
         # Create model directory
         model_dir = Path(model_dir)
-        
+
         if model_dir.exists() and model_dir.is_dir():
-            for item in model_dir():
+            for item in model_dir.iterdir():
                 if item.is_file() or item.is_symlink():
                     item.unlink()
                 elif item.is_dir():
