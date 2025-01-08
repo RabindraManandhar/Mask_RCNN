@@ -60,8 +60,6 @@ def main():
     )
     trainer.compile(optimizer)
 
-    # Mode
-
     # Train the model
     print("Training the model...")
     trainer.train(
@@ -90,7 +88,15 @@ def main():
     # Run inference
     class_names = ["Background", "Fruit", "Leaf", "Flower"]
     inference_runner = InferenceRunner(trainer.model, class_names, device)
-    inference_runner.run_inference(test_dataset, output_dir="visualizations")
+
+    # Run inference on test dataset
+    inference_runner.run_inference(dataset=test_dataset, output_dir="visualizations")
+
+    # Run inference on new .jpg images
+    image_dir = "images"
+    inference_runner.run_inference_on_images(
+        image_dir=image_dir, output_dir="inference_results"
+    )
 
 
 if __name__ == "__main__":
