@@ -54,3 +54,6 @@ test-results/
 *.tmp
 *.bak
 *.swp
+
+# .py files
+main1.py

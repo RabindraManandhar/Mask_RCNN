@@ -21,8 +21,8 @@ def main():
     train_annotations = train_dir / "_annotations.coco.json"
     val_annotations = val_dir / "_annotations.coco.json"
     test_annotations = test_dir / "_annotations.coco.json"
-    num_classes = 4  # fruit, flower, leaves
-    num_epochs = 2
+    num_classes = 4  # including background
+    num_epochs = 10
 
     # device
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -87,6 +87,7 @@ def main():
 
     # Run inference
     class_names = ["Background", "Fruit", "Leaf", "Flower"]
+
     inference_runner = InferenceRunner(trainer.model, class_names, device)
 
     # Run inference on test dataset
