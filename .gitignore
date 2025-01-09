@@ -26,6 +26,12 @@ dataset/train/
 dataset/valid/
 dataset/test/
 
+dataset1/
+!dataset1/*.coco.json  # Include COCO annotations
+dataset1/train/
+dataset1/valid/
+dataset1/test/
+
 # Logs and debug files
 *.log
 *.txt
