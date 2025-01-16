@@ -1,13 +1,19 @@
 import os
+import sys
 from pathlib import Path
 import torch
 from torch.utils.data import DataLoader
-from src import (
-    MaskRCNNTrainer,
-    COCODataset,
-    InferenceRunner,
-    get_transforms,
-)
+
+# Add the 'src' directory to the Python path
+script_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(script_dir, "..", "src"))
+
+
+# Import specific classes and functions from the modules inside src/ to expose them at the package level.
+from src.datasets import COCODataset
+from src.trainer import MaskRCNNTrainer
+from src.inference import InferenceRunner
+from src.utils import get_transforms
 
 
 def main():
@@ -15,7 +21,7 @@ def main():
     Entry point for training, validating, and running inference with Mask R-CNN.
     """
     # Paths to data and output directories
-    base_dir = Path(__file__).resolve().parent.parent  # Root directory
+    base_dir = Path(__file__).resolve().parent  # Root directory
     dataset_dir = base_dir / "data"
     images_dir = base_dir / "images"
     models_dir = base_dir / "models"
