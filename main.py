@@ -127,12 +127,12 @@ def main():
         class_names,
         device,
     )
-    # Run inference on test dataset with GrabCut refinement
+    # Run inference on test dataset
     inference_runner.run_inference(
         dataset=test_dataset, output_dir=inference_results_dataset_dir
     )
 
-    # Run inference on new .jpg images with GrabCut refinement
+    # Run inference on new .jpg images
     inference_runner.run_inference_on_images(
         image_dir=images_dir, output_dir=inference_results_images_dir
     )
