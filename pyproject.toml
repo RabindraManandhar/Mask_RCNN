@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+version = "0.0.1"
+description = "A PyTorch-based implementation of Mask R-CNN for object detection and segmentation."
+readme = "README.md"
+authors = [
+    {name = "Rabindra Manandhar", ramil = "rabindra.mdr@gmail.com"}
+]
+dependencies = [
+    "torch=>=1.9.0",
+    "torchvision>=0.10.0",
+    "matplotlib>=3.3.0",
+    "opencv-python>=4.5.0",
+    "pycocotools>=2.0.2",
+    "numpy>=1.19.0",
+]
+
+keywords = ["machine learning", "mask-rcnn", "object-detection", "segmentation", "pytorch"]
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+homepage = "https://github.com/RabindraManandhar/Mask_RCNN"
+repository = "https://github.com/RabindraManandhar/Mask_RCNN"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.scripts]
+mask_rcnn_inference = "src.main:main"
