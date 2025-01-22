@@ -40,8 +40,8 @@ def main():
 
     # Configuration
     num_classes = 4  # including background
-    num_epochs = 2
-    batch_size = 32
+    num_epochs = 100
+    batch_size = 2
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Using device: {device}")
 
@@ -112,7 +112,7 @@ def main():
     # Save the model
     # print("Saving the model ...")
     model_path = models_dir / "mask_rcnn_model.pth"
-    # trainer.save_model(model_name=model_path, model_dir="models")
+    trainer.save_model(model_name=model_path, model_dir="models")
 
     # Load the saved model
     print("Loading the trained model...")

@@ -36,8 +36,8 @@ logs/
 !requirements.txt
 
 # Output visualizations
-visualizations_test_images/
-visualizations_new_images/
+#visualizations_test_images/
+#visualizations_new_images/
 
 # IDE settings
 .vscode/
