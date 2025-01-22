@@ -101,14 +101,13 @@ def main():
 
     # Training the model
     print("Training Started...")
-    """
+
     trainer.train(
         data_loader=train_loader,
         val_loader=val_loader,
         num_epochs=num_epochs,
         validate_every=1,
     )
-    """
 
     # Save the model
     # print("Saving the model ...")

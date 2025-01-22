@@ -55,4 +55,5 @@ tests/
 *.bak
 *.swp
 
-# .py files
+# Other directories
+documentation/

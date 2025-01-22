@@ -9,7 +9,7 @@ This project implements Mask R-CNN using Python 3 and PyTorch. The model generat
 - **Visualizations**: Save and view results with overlaid masks and class labels.
 
 ## Project Structure
-```
+```plaintext
 Mask_RCNN/
 ├── data/                       # Dataset directories (not included in the package)
 │   ├── train/
@@ -48,13 +48,33 @@ cd Mask_RCNN
 ```
 
 ## Requirements
-The project requires the following dependencies:
-- torch>=1.9.0
-- torchvision>=0.10.0
-- matplotlib>=3.3.0
-- opencv-python>=4.5.0
-- pycocotools>=2.0.2
-- numpy>=1.19.0
+
+#### 1. Dataset Requirements
+```plaintext
+data/
+├── train/
+│   ├── image1.jpg
+│   ├── image2.jpg
+│   └── _annotations.coco.json
+├── test/
+│   ├── image1.jpg
+│   ├── image2.jpg
+│   └── _annotations.coco.json
+├── valid/
+│   ├── image1.jpg
+│   ├── image2.jpg
+│   └── _annotations.coco.json
+```
+
+#### 2. Dependencies Requirements
+```plaintext
+torch>=1.9.0
+torchvision>=0.10.0
+matplotlib>=3.3.0
+opencv-python>=4.5.0
+pycocotools>=2.0.2
+numpy>=1.19.0
+```
 
 Install all dependencies with:
 ```bash
