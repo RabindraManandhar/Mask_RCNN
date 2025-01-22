@@ -20,11 +20,11 @@ dist/
 *.pth
 
 # Dataset and annotations
-data/
-!data/*.coco.json  # Include COCO annotations
-data/train/
-data/valid/
-data/test/
+#data/
+#!data/*.coco.json  # Include COCO annotations
+#data/train/
+#data/valid/
+#data/test/
 
 # Logs and debug files
 *.log
