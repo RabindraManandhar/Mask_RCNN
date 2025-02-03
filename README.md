@@ -43,7 +43,7 @@ Mask_RCNN/
 
 #### 1. Clone the repository
 ```bash
-git clone https://github.com/RabindraManandhar/Mask_RCNN
+git clone https://github.com/RabindraManandhar/Mask_RCNN.git
 cd Mask_RCNN
 ```
 
